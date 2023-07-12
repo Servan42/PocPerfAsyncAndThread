@@ -13,19 +13,31 @@ Console.WriteLine($"Read {links.Count} links");
 IHttpClientAdapter httpClientAdapter = new HttpClientAdapter();
 PerfService perfService = new PerfService(links, httpClientAdapter);
 
-int numberOfLinksToLoad = 100;
+int numberOfLinksToLoad = 400;
 Console.WriteLine($"Stats for {numberOfLinksToLoad} links");
 if(links.Count < numberOfLinksToLoad) numberOfLinksToLoad = links.Count;
 
 Console.Write("LoadLinks:                     ");
-Console.WriteLine(perfService.LoadLinks(numberOfLinksToLoad));
+TimeSpan initialtimeSpan = perfService.LoadLinks(numberOfLinksToLoad);
+Console.WriteLine(initialtimeSpan);
+
 Console.Write("LoadLinksAsync:                ");
-Console.WriteLine(await perfService.LoadLinksAsync(numberOfLinksToLoad));
+TimeSpan timeSpan = await perfService.LoadLinksAsync(numberOfLinksToLoad);
+Console.WriteLine(timeSpan + $"    {((initialtimeSpan.Ticks - timeSpan.Ticks) * 100) / initialtimeSpan.Ticks}% faster");
+
 Console.Write("LoadLinksThreaded8Cores:       ");
-Console.WriteLine(perfService.LoadLinksThreaded8Cores(numberOfLinksToLoad));
+timeSpan = perfService.LoadLinksThreaded8Cores(numberOfLinksToLoad);
+Console.WriteLine(timeSpan + $"    {((initialtimeSpan.Ticks - timeSpan.Ticks) * 100) / initialtimeSpan.Ticks}% faster");
+
 Console.Write("LoadLinks8Tasks:               ");
-Console.WriteLine(perfService.LoadLinks8Tasks(numberOfLinksToLoad));
+timeSpan = perfService.LoadLinks8Tasks(numberOfLinksToLoad);
+Console.WriteLine(timeSpan + $"    {((initialtimeSpan.Ticks - timeSpan.Ticks) * 100) / initialtimeSpan.Ticks}% faster");
+
 Console.Write("LoadLinksParallelForeach:      ");
-Console.WriteLine(perfService.LoadLinksParallelForeach(numberOfLinksToLoad));
+timeSpan = perfService.LoadLinksParallelForeach(numberOfLinksToLoad);
+Console.WriteLine(timeSpan + $"    {((initialtimeSpan.Ticks - timeSpan.Ticks) * 100) / initialtimeSpan.Ticks}% faster");
+
 Console.Write("LoadLinksParallelForeachAsync: ");
-Console.WriteLine(await perfService.LoadLinksParallelForeachAsync(numberOfLinksToLoad));
+timeSpan = await perfService.LoadLinksParallelForeachAsync(numberOfLinksToLoad);
+Console.WriteLine(timeSpan + $"    {((initialtimeSpan.Ticks - timeSpan.Ticks) * 100) / initialtimeSpan.Ticks}% faster");
+
